@@ -40,29 +40,37 @@ def getCols():
 		print row
 
 def agg_stats(fieldName):
-	minString = "SELECT MIN(" + fieldName + ") FROM trips"
-	min = mysql.MySQLquery(minString)
+	minQuery = "SELECT MIN(" + fieldName + ") FROM trips"
+	min = mysql.MySQLquery(minQuery)[0][0]
 	print "Duration Mininum:",min
-	maxString = "SELECT MAX(" + fieldName + ") FROM trips"
-	max = mysql.MySQLquery(maxString)
+	maxQuery = "SELECT MAX(" + fieldName + ") FROM trips"
+	max = mysql.MySQLquery(maxQuery)[0][0]
 	print "Duration Maximum:",max
-	print "Duration Range:",max[0][0]-min[0][0]
-	avgString = "SELECT AVG(" + fieldName + ") FROM trips"
-	avg = mysql.MySQLquery(avgString)
+	print "Duration Range:",max-min
+	avgQuery = "SELECT AVG(" + fieldName + ") FROM trips"
+	avg = mysql.MySQLquery(avgQuery)[0][0]
 	print "Duration Mean:",avg
-	stdString = "SELECT STDDEV_SAMP(" + fieldName + ") FROM trips"
-	std = mysql.MySQLquery(stdString)
+	stdQuery = "SELECT STDDEV_SAMP(" + fieldName + ") FROM trips"
+	std = mysql.MySQLquery(stdQuery)[0][0]
 	print "Duration Std:",std
 
 	return [min,max,avg,std]
 
 def modal_stats(fieldName):
-	freqString = "SELECT " + fieldName + ", COUNT(" + fieldName + ") AS frequency FROM trips GROUP BY " + fieldName + " ORDER BY frequency DESC;"
-	freqs = mysql.MySQLquery(freqString)
+	freqQuery = "SELECT " + fieldName + ", COUNT(" + fieldName + ") AS frequency FROM trips GROUP BY " + fieldName + " ORDER BY frequency DESC;"
+	freqs = mysql.MySQLquery(freqQuery)
 	print "Mode:",freqs[0]
 	return freqs
 	
-
+def median(fieldName):
+	count = mysql.MySQLquery("SELECT COUNT(" + fieldName + ") FROM trips;")[0][0]
+	if count %2 == 0:
+		medQuery = "SELECT " + fieldName + " FROM trips ORDER BY " + fieldName + " LIMIT " + str(count/2) + ",1;"
+		median = mysql.MySQLquery(medQuery)
+	else:
+		medQuery = "SELECT " + fieldName + " FROM trips ORDER BY " + fieldName + " LIMIT " + str(int(scipy.floor(count/2))) + ",2;"
+		median = mysql.MySQLquery(medQuery)
+		return median
 
 
 
