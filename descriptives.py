@@ -4,7 +4,7 @@ Description: Computes descriptive statistics from a .csv dataset
 Usage:
 Date Started: 2012 Oct
 Last Modified:
-http://asymptoticdesign.wordpress.com/
+http://www.asymptoticdesign.org/
 This work is licensed under a Creative Commons 3.0 License.
 (Attribution - NonCommerical - ShareAlike)
 http:#creativecommons.org/licenses/by-nc-sa/3.0/
