@@ -60,3 +60,7 @@ def MySQLquery(command,host='salmon-dance.cruftlabs.com',user=username,pw=passwo
 
     return rows
 
+def getCols():
+	colNames = mysql.MySQLquery("SHOW COLUMNS FROM trips;")
+	for row in colNames:
+		print row
