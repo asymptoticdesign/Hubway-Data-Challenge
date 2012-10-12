@@ -30,16 +30,41 @@ import hubwaylib as mysql
 #median
 #mean/std
 #frequencies
-def aggregate_statistics(fieldName):
+def flattenToList(input):
+	output = list(reduce(lambda p,q: p + q, input))
+	return output
+
+def getCols():
+	colNames = mysql.MySQLquery("SHOW COLUMNS FROM trips;")
+	for row in colNames:
+		print row
+
+def agg_stats(fieldName):
 	minString = "SELECT MIN(" + fieldName + ") FROM trips"
 	min = mysql.MySQLquery(minString)
+	print "Duration Mininum:",min
 	maxString = "SELECT MAX(" + fieldName + ") FROM trips"
 	max = mysql.MySQLquery(maxString)
+	print "Duration Maximum:",max
+	print "Duration Range:",max[0][0]-min[0][0]
 	avgString = "SELECT AVG(" + fieldName + ") FROM trips"
 	avg = mysql.MySQLquery(avgString)
-	stdString = "SELECT STD(" + fieldName + ") FROM trips"
+	print "Duration Mean:",avg
+	stdString = "SELECT STDDEV_SAMP(" + fieldName + ") FROM trips"
 	std = mysql.MySQLquery(stdString)
-	return min,max,avg,std
+	print "Duration Std:",std
+
+	return [min,max,avg,std]
+
+def modal_stats(fieldName):
+	freqString = "SELECT " + fieldName + ", COUNT(" + fieldName + ") AS frequency FROM trips GROUP BY " + fieldName + " ORDER BY frequency DESC;"
+	freqs = mysql.MySQLquery(freqString)
+	print "Mode:",freqs[0]
+	return freqs
+	
+
+
+
 
 #ideas:
 #track individual bikes through city
