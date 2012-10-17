@@ -14,12 +14,9 @@ Reads serial information from an arduino circuit, writes it to file.
 import sys
 import csv
 import scipy
+import pylab
 import hubwaylib as hubway
 
-#min/max/range
-#median
-#mean/std
-#frequencies
 def flattenToList(input):
 	output = list(reduce(lambda p,q: p + q, input))
 	return output
@@ -27,24 +24,28 @@ def flattenToList(input):
 def agg_stats(fieldName):
 	minQuery = "SELECT MIN(" + fieldName + ") FROM trips"
 	min = hubway.MySQLquery(minQuery)[0][0]
-	print "Duration Mininum:",min
+	print "Field Mininum:",min
 	maxQuery = "SELECT MAX(" + fieldName + ") FROM trips"
 	max = hubway.MySQLquery(maxQuery)[0][0]
-	print "Duration Maximum:",max
-	print "Duration Range:",max-min
+	print "Field Maximum:",max
 	avgQuery = "SELECT AVG(" + fieldName + ") FROM trips"
 	avg = hubway.MySQLquery(avgQuery)[0][0]
-	print "Duration Mean:",avg
+	print "Field Mean:",avg
 	stdQuery = "SELECT STDDEV_SAMP(" + fieldName + ") FROM trips"
 	std = hubway.MySQLquery(stdQuery)[0][0]
-	print "Duration Std:",std
-
+	print "Field Std:",std
 	return [min,max,avg,std]
+
+def dateQuery(dateField,subField="month"):
+	queryString = "SELECT %s(%s), COUNT(*) AS frequency FROM trips GROUP BY %s(%s) ORDER BY frequency DESC;" %(subField.upper(), dateField, subField.upper(), dateField)
+	freq = hubway.MySQLquery(queryString)
+	return freq
 
 def modal_stats(fieldName):
 	freqQuery = "SELECT " + fieldName + ", COUNT(" + fieldName + ") AS frequency FROM trips GROUP BY " + fieldName + " ORDER BY frequency DESC;"
 	freqs = hubway.MySQLquery(freqQuery)
 	print "Mode:",freqs[0]
+	print "Unique Items:",len(freqs)
 	return freqs
 	
 def median(fieldName):
@@ -57,7 +58,17 @@ def median(fieldName):
 		median = hubway.MySQLquery(medQuery)
 		return median
 
-
+def plotData(frequencies,cutoff=-1,abscissa='Absicca [units]',ordinate='No. [counts]',title='Hubway DataViz'):
+	bins = []
+	counts = []
+	for pair in frequencies:
+		bins.append(pair[0])
+		counts.append(pair[1])
+	pylab.bar(bins[:cutoff],counts[:cutoff])
+	pylab.xlabel(abscissa,{'fontsize':20})
+	pylab.ylabel(ordinate,{'fontsize':20})
+	pylab.title(title,{'fontsize':20})
+	pylab.show()
 
 #ideas:
 #track individual bikes through city

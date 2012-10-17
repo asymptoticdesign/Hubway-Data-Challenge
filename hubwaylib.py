@@ -15,7 +15,7 @@ import urlparse
 import re
 
 #store username/password in a .txt file (one line, user/pass seperated by a space)
-passfile = open('/home/scottnla/Dropbox/hubwaypass','r')
+passfile = open('/home/scottnla/hubwaypass','r')
 contents = passfile.read()
 username = contents.split()[0]
 password = contents.split()[1]
@@ -61,6 +61,6 @@ def MySQLquery(command,host='salmon-dance.cruftlabs.com',user=username,pw=passwo
     return rows
 
 def getCols():
-	colNames = mysql.MySQLquery("SHOW COLUMNS FROM trips;")
+	colNames = MySQLquery("SHOW COLUMNS FROM trips;")
 	for row in colNames:
 		print row
