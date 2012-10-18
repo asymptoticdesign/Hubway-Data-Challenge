@@ -37,16 +37,16 @@ def agg_stats(fieldName):
 	return [min,max,avg,std]
 
 def dateQuery(dateField,subField="month"):
-	queryString = "SELECT %s(%s), COUNT(*) AS frequency FROM trips GROUP BY %s(%s) ORDER BY frequency DESC;" %(subField.upper(), dateField, subField.upper(), dateField)
+	queryString = "SELECT %s(%s), COUNT(*) AS frequency FROM trips GROUP BY %s(%s) ORDER BY %s;" %(subField.upper(), dateField, subField.upper(), dateField, dateField)
 	freq = hubway.MySQLquery(queryString)
-	return freq
+	return freq[1:]
 
 def modal_stats(fieldName):
-	freqQuery = "SELECT " + fieldName + ", COUNT(" + fieldName + ") AS frequency FROM trips GROUP BY " + fieldName + " ORDER BY frequency DESC;"
+	freqQuery = "SELECT %s, COUNT(%s) AS frequency FROM trips GROUP BY %s ORDER BY %s;" %(fieldName,fieldName,fieldName,fieldName)
 	freqs = hubway.MySQLquery(freqQuery)
-	print "Mode:",freqs[0]
+#	print "Mode:",freqs[0]
 	print "Unique Items:",len(freqs)
-	return freqs
+	return freqs[1:]
 	
 def median(fieldName):
 	count = hubway.MySQLquery("SELECT COUNT(" + fieldName + ") FROM trips;")[0][0]
@@ -64,6 +64,7 @@ def plotData(frequencies,cutoff=-1,abscissa='Absicca [units]',ordinate='No. [cou
 	for pair in frequencies:
 		bins.append(pair[0])
 		counts.append(pair[1])
+		print pair[0],pair[1]
 	pylab.bar(bins[:cutoff],counts[:cutoff])
 	pylab.xlabel(abscissa,{'fontsize':20})
 	pylab.ylabel(ordinate,{'fontsize':20})
