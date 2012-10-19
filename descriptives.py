@@ -15,12 +15,20 @@ import sys
 import csv
 import scipy
 import pylab
+import csv
 import hubwaylib as hubway
 
 def flattenToList(input):
-	output = list(reduce(lambda p,q: p + q, input))
+	output = list(reduce(lambda p,q: p+q, input))
 	return output
 
+def writeToFile(list,filename):
+	outputfile = open(filename+'.csv','w')
+	for pair in list:
+		outputfile.write(str(float(pair[0])) + "," + str(float(pair[1])) + "\n")
+	outputfile.close()
+
+#add writetofile
 def agg_stats(fieldName):
 	minQuery = "SELECT MIN(" + fieldName + ") FROM trips"
 	min = hubway.MySQLquery(minQuery)[0][0]
