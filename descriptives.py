@@ -78,8 +78,3 @@ def plotData(frequencies,cutoff=-1,abscissa='Absicca [units]',ordinate='No. [cou
 	pylab.ylabel(ordinate,{'fontsize':20})
 	pylab.title(title,{'fontsize':20})
 	pylab.show()
-
-#ideas:
-#track individual bikes through city
-#distance to T stations
-#distance to nearest item
