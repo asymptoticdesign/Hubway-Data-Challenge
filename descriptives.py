@@ -15,13 +15,36 @@ import sys
 import csv
 import scipy
 import pylab
+import csv
 import hubwaylib as hubway
 
 def flattenToList(input):
-	output = list(reduce(lambda p,q: p + q, input))
+	output = list(reduce(lambda p,q: p+q, input))
 	return output
 
-def dateQuery(dateField,subField="month",filename="output"):
+def writeToFile(list,filename):
+	outputfile = open(filename+'.csv','w')
+	for pair in list:
+		outputfile.write(str(float(pair[0])) + "," + str(float(pair[1])) + "\n")
+	outputfile.close()
+
+#add writetofile
+def agg_stats(fieldName):
+	minQuery = "SELECT MIN(" + fieldName + ") FROM trips"
+	min = hubway.MySQLquery(minQuery)[0][0]
+	print "Field Mininum:",min
+	maxQuery = "SELECT MAX(" + fieldName + ") FROM trips"
+	max = hubway.MySQLquery(maxQuery)[0][0]
+	print "Field Maximum:",max
+	avgQuery = "SELECT AVG(" + fieldName + ") FROM trips"
+	avg = hubway.MySQLquery(avgQuery)[0][0]
+	print "Field Mean:",avg
+	stdQuery = "SELECT STDDEV_SAMP(" + fieldName + ") FROM trips"
+	std = hubway.MySQLquery(stdQuery)[0][0]
+	print "Field Std:",std
+	return [min,max,avg,std]
+
+def dateQuery(dateField,subField="month"):
 	queryString = "SELECT %s(%s), COUNT(*) AS frequency FROM trips GROUP BY %s(%s) ORDER BY %s;" %(subField.upper(), dateField, subField.upper(), dateField, dateField)
 	freq = hubway.MySQLquery(queryString)
 	#write to file here
