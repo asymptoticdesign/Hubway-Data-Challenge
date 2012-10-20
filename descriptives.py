@@ -25,7 +25,7 @@ def flattenToList(input):
 def writeToFile(list,filename):
 	outputfile = open(filename+'.csv','w')
 	for pair in list:
-		outputfile.write(str(float(pair[0])) + "," + str(float(pair[1])) + "\n")
+		outputfile.write(",".join([str(item) for item in pair]) + "\n")
 	outputfile.close()
 
 #add writetofile
@@ -44,10 +44,16 @@ def agg_stats(fieldName):
 	print "Field Std:",std
 	return [min,max,avg,std]
 
-def dateQuery(dateField,subField="month"):
-	queryString = "SELECT %s(%s), COUNT(*) AS frequency FROM trips GROUP BY %s(%s) ORDER BY %s;" %(subField.upper(), dateField, subField.upper(), dateField, dateField)
+def dateQuery(dateField,filename="output"):
+	queryString = "SELECT YEAR(%s), MONTH(%s), HOUR(%s), COUNT(*) AS frequency FROM trips GROUP BY MONTH(%s), HOUR(%s) ORDER BY %s;" %(dateField, dateField, dateField, dateField, dateField, dateField)
 	freq = hubway.MySQLquery(queryString)
-	#write to file here
+	writeToFile(freq,filename)
+	return freq[1:]
+
+def stationQuery(station,filename="output"):
+	queryString = "SELECT %s, COUNT(*) AS frequency FROM trips GROUP BY MONTH(%s), HOUR(%s) ORDER BY %s;" %(dateField, dateField, dateField, dateField, dateField, dateField)
+	freq = hubway.MySQLquery(queryString)
+       	writeToFile(freq[1:],filename)
 	return freq[1:]
 
 def modal_stats(fieldName,filename="output"):
@@ -56,8 +62,8 @@ def modal_stats(fieldName,filename="output"):
 #	print "Mode:",freqs[0]
 	print "Unique Items:",len(freqs)
 	#write to file here
-	return freqs[1:]
-	
+	writeToFile(freqs[1:],filename)
+	return freqs[1:]	
 
 def plotData(frequencies,cutoff=-1,abscissa='Absicca [units]',ordinate='No. [counts]',title='Hubway DataViz'):
 	bins = []
