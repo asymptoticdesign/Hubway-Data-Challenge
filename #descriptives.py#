@@ -25,7 +25,7 @@ def flattenToList(input):
 def writeToFile(list,filename):
 	outputfile = open(filename+'.csv','w')
 	for pair in list:
-		outputfile.write(",".join([str(float(item)) for item in pair]) + "\n")
+		outputfile.write(",".join([str(item) for item in pair]) + "\n")
 	outputfile.close()
 
 #add writetofile
@@ -45,7 +45,7 @@ def agg_stats(fieldName):
 	return [min,max,avg,std]
 
 def dateQuery(dateField,filename="output"):
-	queryString = "SELECT YEAR(%s), MONTH(%s), HOUR(%s), COUNT(*) AS frequency FROM trips GROUP BY MONTH(%s), HOUR(%s) ORDER BY %s;" %(dateField, dateField, dateField, dateField, dateField, dateField)
+	queryString = "SELECT HOUR(%s), COUNT(*) AS frequency FROM trips GROUP BY HOUR(%s) ORDER BY HOUR(%s);" %(dateField, dateField, dateField)
 	freq = hubway.MySQLquery(queryString)
 	writeToFile(freq,filename)
 	return freq[1:]
