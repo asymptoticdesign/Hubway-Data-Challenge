@@ -1,9 +1,9 @@
 /*
-Title:
+Title: Bar Graph
 Description:
-Date Started:
-Last Modified:
-http://asymptoticdesign.wordpress.com/
+Date Started: Oct 2012
+Last Modified: Oct 2012
+http://www.asymptoticdesign.org/
 This work is licensed under a Creative Commons 3.0 License.
 (Attribution - NonCommerical - ShareAlike)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
@@ -16,8 +16,15 @@ it, you may only distribute the resulting work under this license.
 Of course, the conditions may be waived with permission from the author.
 */
 
+import processing.opengl.*;
+import codeanticode.glgraphics.*;
+import de.fhpotsdam.unfolding.*;
+import de.fhpotsdam.unfolding.geo.*;
+import de.fhpotsdam.unfolding.utils.*;
+
 //-----------------Globals
 FloatTable data;
+UnfoldingMap bostonMap;
 int rowCount;
 float[] abscissa;
 float[] counts;
@@ -28,16 +35,20 @@ float plotMinY,plotMaxY;
 
 //-----------------Setup
 void setup(){
-  size(800,600,P2D);
+  size(600,600,P2D);
   background(0);
   strokeWeight(2);
   noFill();
   smooth();
   
+  bostonMap = new UnfoldingMap(this);
+  MapUtils.createDefaultEventDispatcher(this, bostonMap);
+	
+  bostonMap.zoomAndPanTo(new Location(42.353,-71.086), 13);
+  
   //setup data structure for csv file
   data = new FloatTable("../output/start_hour.csv");
   rowCount = data.getRowCount();
-  println("Row Count " + rowCount);
   
   //setup x-axis with min and max
   abscissa = float(data.getRowNames());
@@ -55,12 +66,16 @@ void setup(){
 
   //drawBarGraph(abscissa,counts,24);
   //daytime
-  stroke(255,255,0);
-  drawClock(3*width/4,height/2,abscissa,counts,12,23);
+  //stroke(255,255,0);
+  //drawClock(width/4,height/2,abscissa,counts,0,11);
   //nighttime
-  stroke(0,255,255);
-  drawClock(width/4,height/2,abscissa,counts,0,11);
+  //stroke(0,255,255);
+  //drawClock(3*width/4,height/2,abscissa,counts,12,23);
   
+}
+
+void draw() {
+    bostonMap.draw();
 }
 
 //-----------------Interactions
@@ -86,7 +101,6 @@ void drawClock(float centX, float centY, float[] ex, float[] why, float minValue
   int highIndex = 0;
   float arrayMax = 0;
 
-  println(ex);
   for(int row = 0; row < rowCount; row++) {
     
     if(ex[row] <= maxValue && ex[row] >= minValue) {
@@ -105,10 +119,9 @@ void drawClock(float centX, float centY, float[] ex, float[] why, float minValue
   translate(centX, centY);
 
   //draw each bar
-  for(int row = lowIndex; row < highIndex; row++) {
+  for(int row = lowIndex; row <= highIndex; row++) {
     float y = map(why[row],minY,arrayMax,0,height/4-50);
     line(0,0,0,-y);
-    println("Hour: " + row + "\t Counts: " + why[row]);
     rotate(TWO_PI/float(highIndex - lowIndex + 1));
   }
   
